@@ -1,220 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sensor Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="ul.png">
+    <title>Sensor Dashboard</title>
 
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Leaflet CSS (map library) -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
+    <!-- Leaflet CSS (map library) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  <style>
-    body { background-color: #f7f7f9; }
-    header { background: #0d6efd; color: #fff; }
-    .brand { font-weight: 700; letter-spacing: .3px; }
-    footer { color: #6c757d; }
-    canvas { image-rendering: -webkit-optimize-contrast; }
-    .logo { height: 40px; margin-right: 10px; }
-    .live-badge { font-size: 0.9rem; padding: 0.4em 0.6em; }
+    <style>
+        body {
+            background-color: #f7f7f9;
+        }
 
-    /* Map card styles */
-    .map-card {
-      max-width: 100%;
-      margin: 2rem auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-      padding: 1rem 1.25rem;
-    }
-    .map-header h3 { margin: 0; font-size: 1.25rem; font-weight: 600; }
-    .map-wrapper { width: 100%; border-radius: 12px; overflow: hidden; }
-    #ul-map { width: 100%; height: 420px; }
-    .leaflet-popup-content { font-size: 0.95rem; line-height: 1.3; }
-  </style>
+        header {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .brand {
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        footer {
+            color: #6c757d;
+        }
+
+        canvas {
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .live-badge {
+            font-size: 0.9rem;
+            padding: 0.4em 0.6em;
+        }
+
+        /* Map card styles */
+        .map-card {
+            max-width: 100%;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+            padding: 1rem 1.25rem;
+        }
+
+        .map-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .map-wrapper {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #ul-map {
+            width: 100%;
+            height: 420px;
+        }
+
+        .leaflet-popup-content {
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+    </style>
 </head>
+
 <body>
-  <!-- Header -->
-  <header class="py-3">
-    <div class="container d-flex flex-wrap justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="cris_logo.png" alt="CRIS Logo" class="logo" />
-        <img src="ul.png" alt="UL Logo" class="logo" />
-        <div class="brand h4 m-0">Sensor Dashboard</div>
-      </div>
-      <div>
-        <span id="connStatus" class="badge bg-secondary live-badge">Connecting…</span>
-      </div>
-    </div>
-  </header>
+    <!-- Header -->
+    <header class="py-3">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="cris_logo.png" alt="CRIS Logo" class="logo" />
+                <img src="ul.png" alt="UL Logo" class="logo" />
+                <div class="brand h4 m-0">Sensor Dashboard</div>
+            </div>
+            <div>
+                <span id="connStatus" class="badge bg-secondary live-badge">Connecting…</span>
+            </div>
+        </div>
+    </header>
 
-  <!-- Main -->
-  <main class="container my-5">
-    <h3 class="mb-2">Room Temperature (last 10 readings)</h3>
+    <!-- Main -->
+    <main class="container my-5">
+        <h3 class="mb-2">Room Temperature (last 10 readings)</h3>
 
-    <div class="d-flex flex-wrap gap-3 align-items-center">
-      <div class="fs-5">
-        <strong>Now:</strong> <span id="curTemp">--</span> °C
-      </div>
-      <div class="text-muted">
-        <small>Updated: <span id="curTime">--</span></small>
-      </div>
-    </div>
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+            <div class="fs-5">
+                <strong>Now:</strong> <span id="curTemp">--</span> °C
+            </div>
+            <div class="text-muted">
+                <small>Updated: <span id="curTime">--</span></small>
+            </div>
+        </div>
 
-    <div class="ratio ratio-16x9 mt-3 bg-white rounded shadow-sm p-3">
-      <canvas id="tempChart"></canvas>
-    </div>
+        <div class="ratio ratio-16x9 mt-3 bg-white rounded shadow-sm p-3">
+            <canvas id="tempChart"></canvas>
+        </div>
 
-    <!-- Map Card -->
-    <div class="map-card">
-      <div class="map-header mb-2">
-        <h3>📍 Simulated Live Location</h3>
-        <p class="text-muted mb-0">Castletroy, Limerick, Ireland</p>
-      </div>
-      <div class="map-wrapper">
-        <div id="ul-map" aria-label="Map showing University of Limerick"></div>
-      </div>
-    </div>
-  </main>
+        <!-- Map Card -->
+        <div class="map-card">
+            <div class="map-header mb-2">
+                <h3>📍 Simulated Live Location</h3>
+                <p class="text-muted mb-0">Castletroy, Limerick, Ireland</p>
+            </div>
+            <div class="map-wrapper">
+                <div id="ul-map" aria-label="Map showing University of Limerick"></div>
+            </div>
+        </div>
+    </main>
 
-  <!-- Footer -->
-  <footer class="container my-5 text-center">
-    <small>
-      Data source: GitHub Gist • Updates ~every 120s • Author Luke Griffin
-    </small>
-  </footer>
+    <!-- Footer -->
+    <footer class="container my-5 text-center">
+        <small>
+            Data source: GitHub Gist • Updates ~every 120s • Author Luke Griffin
+        </small>
+    </footer>
 
-  <!-- Scripts -->
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+    <!-- Scripts -->
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
-  <script>
-    // ===== Sensor Graph Config =====
-    const USER = "LukeGrif";
-    const GIST_ID = "188dc885b3eddb2941c08042185fbe61";
+    <script>
+        // ===== Sensor Graph Config =====
+        const USER = "LukeGrif";
+        const GIST_ID = "188dc885b3eddb2941c08042185fbe61";
 
-    const RAW_LATEST = `https://gist.githubusercontent.com/${USER}/${GIST_ID}/raw/latest.json`;
-    const RAW_HISTORY = `https://gist.githubusercontent.com/${USER}/${GIST_ID}/raw/history.json`;
+        const RAW_LATEST = `https://gist.githubusercontent.com/${USER}/${GIST_ID}/raw/latest.json`;
+        const RAW_HISTORY = `https://gist.githubusercontent.com/${USER}/${GIST_ID}/raw/history.json`;
 
-    const labels = [];
-    const temps = [];
-    const ctx = document.getElementById('tempChart').getContext('2d');
-    const connStatus = document.getElementById('connStatus');
+        const labels = [];
+        const temps = [];
+        const ctx = document.getElementById('tempChart').getContext('2d');
+        const connStatus = document.getElementById('connStatus');
 
-    // Chart setup
-    const chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Temperature (°C)',
-          data: temps,
-          borderWidth: 2,
-          tension: 0.3,
-          borderColor: 'rgb(75, 192, 192)',
-          pointBackgroundColor: 'rgb(75, 192, 192)',
-          fill: false
-        }]
-      },
-      options: {
-        animation: false,
-        interaction: { mode: 'index', intersect: false },
-        scales: {
-          y: { beginAtZero: true, title: { display: true, text: '°C' } },
-          x: { title: { display: true, text: 'Time' } }
+        // Chart setup
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Temperature (°C)',
+                    data: temps,
+                    borderWidth: 2,
+                    tension: 0.3,
+                    borderColor: 'rgb(75, 192, 192)',
+                    pointBackgroundColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            },
+            options: {
+                animation: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: '°C' } },
+                    x: { title: { display: true, text: 'Time' } }
+                }
+            }
+        });
+
+        // Utilities
+        async function fetchJSON(url) {
+            const sep = url.includes('?') ? '&' : '?';
+            const res = await fetch(url + sep + 't=' + Date.now(), { cache: 'no-store' });
+            return res.json();
         }
-      }
-    });
-
-    // Utilities
-    async function fetchJSON(url) {
-      const sep = url.includes('?') ? '&' : '?';
-      const res = await fetch(url + sep + 't=' + Date.now(), { cache: 'no-store' });
-      return res.json();
-    }
-    function pushPoint(tsISO, tC) {
-      const label = new Date(tsISO).toLocaleTimeString();
-      labels.push(label);
-      temps.push(Number(tC));
-      if (labels.length > 10) { labels.shift(); temps.shift(); }
-      chart.update();
-      document.getElementById('curTemp').textContent = Number(tC).toFixed(1);
-      document.getElementById('curTime').textContent = new Date(tsISO).toLocaleString();
-    }
-    function setLiveStatus(isLive) {
-      if (isLive) {
-        connStatus.textContent = "Live";
-        connStatus.className = "badge bg-success live-badge";
-      } else {
-        connStatus.textContent = "Reconnecting…";
-        connStatus.className = "badge bg-warning text-dark live-badge";
-      }
-    }
-
-    // Data loading
-    async function loadHistory() {
-      try {
-        const hist = await fetchJSON(RAW_HISTORY);
-        hist.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        const last10 = hist.slice(-10);
-        last10.forEach(p => pushPoint(p.timestamp, p.temperature));
-        setLiveStatus(true);
-      } catch (e) {
-        console.warn("No history yet, will start from latest.", e);
-        setLiveStatus(false);
-      }
-    }
-    let lastTs = null;
-    async function pollLatest() {
-      try {
-        const { temperature, timestamp } = await fetchJSON(RAW_LATEST);
-        if (!lastTs || timestamp !== lastTs) {
-          lastTs = timestamp;
-          pushPoint(timestamp, temperature);
+        function pushPoint(tsISO, tC) {
+            const label = new Date(tsISO).toLocaleTimeString();
+            labels.push(label);
+            temps.push(Number(tC));
+            if (labels.length > 10) { labels.shift(); temps.shift(); }
+            chart.update();
+            document.getElementById('curTemp').textContent = Number(tC).toFixed(1);
+            document.getElementById('curTime').textContent = new Date(tsISO).toLocaleString();
         }
-        setLiveStatus(true);
-      } catch (e) {
-        console.error("Latest fetch error:", e);
-        setLiveStatus(false);
-      }
-    }
-    (async () => {
-      await loadHistory();
-      await pollLatest();
-      setInterval(pollLatest, 10000);
-    })();
+        function setLiveStatus(isLive) {
+            if (isLive) {
+                connStatus.textContent = "Live";
+                connStatus.className = "badge bg-success live-badge";
+            } else {
+                connStatus.textContent = "Reconnecting…";
+                connStatus.className = "badge bg-warning text-dark live-badge";
+            }
+        }
 
-    // ===== Leaflet Map (one pin for UL) =====
-    // Coordinates for University of Limerick (approx campus center)
-    const UL_COORDS = [52.67348, -8.56410];
+        // Data loading
+        async function loadHistory() {
+            try {
+                const hist = await fetchJSON(RAW_HISTORY);
+                hist.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                const last10 = hist.slice(-10);
+                last10.forEach(p => pushPoint(p.timestamp, p.temperature));
+                setLiveStatus(true);
+            } catch (e) {
+                console.warn("No history yet, will start from latest.", e);
+                setLiveStatus(false);
+            }
+        }
+        let lastTs = null;
+        async function pollLatest() {
+            try {
+                const { temperature, timestamp } = await fetchJSON(RAW_LATEST);
+                if (!lastTs || timestamp !== lastTs) {
+                    lastTs = timestamp;
+                    pushPoint(timestamp, temperature);
+                }
+                setLiveStatus(true);
+            } catch (e) {
+                console.error("Latest fetch error:", e);
+                setLiveStatus(false);
+            }
+        }
+        (async () => {
+            await loadHistory();
+            await pollLatest();
+            setInterval(pollLatest, 10000);
+        })();
 
-    const map = L.map("ul-map", { worldCopyJump: true });
-    // Set initial view around UL (zoom ~15 gives campus-level view)
-    map.setView(UL_COORDS, 15);
+        // ===== Leaflet Map (one pin for UL) =====
+        // Coordinates for University of Limerick (approx campus center)
+        const UL_COORDS = [52.67348, -8.56410];
 
-    // OSM tiles
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+        const map = L.map("ul-map", { worldCopyJump: true });
+        // Set initial view around UL (zoom ~15 gives campus-level view)
+        map.setView(UL_COORDS, 15);
 
-    // Default blue marker + popup
-    const marker = L.marker(UL_COORDS).addTo(map);
-    marker.bindPopup("<strong>Simulated Live Location</strong><br/>Castletroy, Limerick, Ireland");
-  </script>
+        // OSM tiles
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Default blue marker + popup
+        const marker = L.marker(UL_COORDS).addTo(map);
+        marker.bindPopup("<strong>Simulated Live Location</strong><br/>Castletroy, Limerick, Ireland");
+    </script>
 </body>
+
 </html>
