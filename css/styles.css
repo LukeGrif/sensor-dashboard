@@ -1,0 +1,69 @@
+/* General layout */
+body {
+    background-color: #f7f7f9;
+}
+
+/* Header */
+.app-header {
+    background: #0d6efd;
+    color: #fff;
+}
+
+.brand {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* Footer */
+footer {
+    color: #6c757d;
+}
+
+/* Chart canvas */
+canvas {
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* Status badge */
+.live-badge {
+    font-size: 0.9rem;
+    padding: 0.4em 0.6em;
+}
+
+/* Map card styles */
+.map-card {
+    max-width: 100%;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.25rem;
+}
+
+.map-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.map-wrapper {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#ul-map {
+    width: 100%;
+    height: 420px;
+}
+
+/* Leaflet popup tweaks */
+.leaflet-popup-content {
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
