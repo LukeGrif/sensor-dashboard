@@ -16,10 +16,17 @@
     const curTempEl = document.getElementById("curTemp");
     const curTimeEl = document.getElementById("curTime");
     const chartCanvas = document.getElementById("tempChart");
+    const chartTitleEl = document.getElementById("chartTitle");
+    const btnLast10 = document.getElementById("btnLast10");
+    const btnAll = document.getElementById("btnAll");
+
 
     // ====== Chart setup ======
     const labels = [];
     const temps = [];
+    const fullHistory = []; // { timestamp, temperature, label }
+    let showAllHistory = false; // false = last 10, true = all
+
 
     const tempChart = new Chart(chartCanvas.getContext("2d"), {
         type: "line",
@@ -64,24 +71,47 @@
         return response.json();
     }
 
-    function pushPoint(timestampISO, temperatureC) {
-        const date = new Date(timestampISO);
-        const label = date.toLocaleTimeString();
+    function updateChart() {
+        // Clear existing chart data
+        labels.length = 0;
+        temps.length = 0;
 
-        labels.push(label);
-        temps.push(Number(temperatureC));
+        // Decide which data to show
+        const dataToUse = showAllHistory
+            ? fullHistory
+            : fullHistory.slice(-10);
 
-        // Keep only last 10 points
-        if (labels.length > 10) {
-            labels.shift();
-            temps.shift();
-        }
+        dataToUse.forEach((point) => {
+            labels.push(point.label);
+            temps.push(point.temperature);
+        });
 
         tempChart.update();
 
-        curTempEl.textContent = Number(temperatureC).toFixed(1);
+        // Update title text
+        chartTitleEl.textContent = showAllHistory
+            ? "Temperature (all readings)"
+            : "Temperature (last 10 readings)";
+    }
+
+    function addPoint(timestampISO, temperatureC) {
+        const date = new Date(timestampISO);
+        const tempNum = Number(temperatureC);
+
+        fullHistory.push({
+            timestamp: timestampISO,
+            temperature: tempNum,
+            label: date.toLocaleTimeString()
+        });
+
+        // Refresh chart according to current mode
+        updateChart();
+
+        // Update "Now" and time display
+        curTempEl.textContent = tempNum.toFixed(1);
         curTimeEl.textContent = date.toLocaleString();
     }
+
 
     function setLiveStatus(isLive) {
         if (isLive) {
@@ -93,6 +123,26 @@
         }
     }
 
+    function setHistoryMode(showAll) {
+        showAllHistory = showAll;
+
+        // Button styling
+        if (showAllHistory) {
+            btnAll.classList.add("btn-primary");
+            btnAll.classList.remove("btn-outline-primary");
+            btnLast10.classList.add("btn-outline-primary");
+            btnLast10.classList.remove("btn-primary");
+        } else {
+            btnLast10.classList.add("btn-primary");
+            btnLast10.classList.remove("btn-outline-primary");
+            btnAll.classList.add("btn-outline-primary");
+            btnAll.classList.remove("btn-primary");
+        }
+
+        updateChart();
+    }
+
+
     // ====== Data loading ======
     async function loadHistory() {
         try {
@@ -102,10 +152,10 @@
                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
             );
 
-            const last10 = history.slice(-10);
-            last10.forEach((point) =>
-                pushPoint(point.timestamp, point.temperature)
+            history.forEach((point) =>
+                addPoint(point.timestamp, point.temperature)
             );
+
 
             setLiveStatus(true);
         } catch (error) {
@@ -123,8 +173,9 @@
 
             if (!lastTimestamp || timestamp !== lastTimestamp) {
                 lastTimestamp = timestamp;
-                pushPoint(timestamp, temperature);
+                addPoint(timestamp, temperature);
             }
+
 
             setLiveStatus(true);
         } catch (error) {
@@ -152,8 +203,11 @@
         );
     }
 
-    // ====== Init ======
     async function init() {
+        // Button click handlers
+        btnLast10.addEventListener("click", () => setHistoryMode(false));
+        btnAll.addEventListener("click", () => setHistoryMode(true));
+
         // Chart data
         await loadHistory();
         await pollLatest();
@@ -162,6 +216,7 @@
         // Map
         initMap();
     }
+
 
     // Run once DOM is ready (script is at end of body, but this is safe)
     if (document.readyState === "loading") {

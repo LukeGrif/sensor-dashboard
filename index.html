@@ -37,7 +37,14 @@
 
     <!-- Main -->
     <main class="container my-5">
-        <h3 class="mb-2">Temperature (last 10 readings)</h3>
+        <h3 class="mb-2 d-flex justify-content-between align-items-center">
+            <span id="chartTitle">Temperature (last 10 readings)</span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="History range">
+                <button type="button" class="btn btn-primary" id="btnLast10">Last 10</button>
+                <button type="button" class="btn btn-outline-primary" id="btnAll">All history</button>
+            </div>
+        </h3>
+
 
         <div class="d-flex flex-wrap gap-3 align-items-center">
             <div class="fs-5">
